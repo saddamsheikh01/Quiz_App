@@ -4,6 +4,8 @@ import 'package:quiz_app/model/questions_model.dart';
 import 'package:quiz_app/widgets/next_button.dart';
 import 'package:quiz_app/widgets/option_card.dart';
 import 'package:quiz_app/widgets/questtion_widgets.dart';
+import 'package:quiz_app/widgets/result_box.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,13 +32,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // create a boolean value to check if the user  has clicked
   bool isPressed = false;
-  // create a function to display the next questions
-  bool isAlreadySelected = false;
-
   // create a function to display the next question
+  bool isAlreadySelected = false;
+  // create a function to display the next question
+
   void nextQuestion() {
     if (index == _question.length - 1) {
-      return;
+
+      //  this is the block where the question add
+      showDialog(context: context,
+          barrierDismissible: false,// this  will dismiss the function  on click  outside of the b0x
+          builder: (ctx) => ResultBox(result: score, // total points the user got
+            questionLength: _question.length, onPressed: startOver, // out of how many questions
+          ));
     } else {
       if (isPressed) {
         setState(() {
@@ -53,23 +61,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+
   // create a function for changing color
-  void changeColorAndUpdate(bool value) {
+  void checkAnswerAndUpdate(bool value) {
     if(isAlreadySelected){
       return;
 
     }else{
       if(value == true){
         score++;
-        setState(() {
-          isPressed = true;
-          isAlreadySelected = false;
-        });
-      }
 
+      }
+      setState(() {
+        isPressed = true;
+        isAlreadySelected= false;
+      });
     }
 
+  }
 
+  // create a function to start over
+  void startOver(){
+    setState(() {
+      index = 0;
+      score = 0;
+      isPressed= false;
+      isAlreadySelected =false;
+    });
+    Navigator.pop(context);
   }
 
   @override
@@ -87,10 +106,10 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: EdgeInsets.all(18.0),
               child: Text('Score: $score',
-              style: TextStyle(
-                fontSize: 18,
-                color: texts,
-              ),),
+                style: TextStyle(
+                  color: texts,
+                  fontSize: 18,
+                ),),
             )
           ],
         ),
@@ -112,17 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               for (int i = 0; i < _question[index].option.length; i++)
                 GestureDetector(
-                  onTap:() => changeColorAndUpdate(
+                  onTap:() => checkAnswerAndUpdate(
                       _question[index].option.values.toList()[i]
                   ),
                   child: OptionCard(
                     option: _question[index].option.keys.toList()[i],
 
-
                     color: isPressed
                         ? _question[index].option.values.toList()[i] == true
-                            ? correct
-                            : incorrect
+                        ? correct
+                        : incorrect
                         : neutral,
                   ),
                 ),

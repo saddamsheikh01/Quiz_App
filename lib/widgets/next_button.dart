@@ -19,6 +19,7 @@ class NextButton extends StatelessWidget {
         child: Text(
           "Next Question",
           textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.black),
         ),
       ),
     );
